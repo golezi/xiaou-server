@@ -60,4 +60,16 @@ public class Sm2DecryptUtil {
             throw new RenException(ErrorCode.SM2_DECRYPT_ERROR);
         }
     }
+
+    public static String decryptPassword(String encryptedPassword, SysParamsService sysParamsService) {
+        String privateKeyStr = sysParamsService.getValue(Constant.SM2_PRIVATE_KEY, true);
+        if (StringUtils.isBlank(privateKeyStr)) {
+            throw new RenException(ErrorCode.SM2_KEY_NOT_CONFIGURED);
+        }
+        try {
+            return SM2Utils.decrypt(privateKeyStr, encryptedPassword);
+        } catch (Exception e) {
+            throw new RenException(ErrorCode.SM2_DECRYPT_ERROR);
+        }
+    }
 }

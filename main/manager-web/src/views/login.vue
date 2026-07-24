@@ -89,20 +89,6 @@
                 show-password />
             </div>
             <div style="
-                display: flex;
-                align-items: center;
-                margin-top: 20px;
-                width: 100%;
-                gap: 10px;
-              ">
-              <div class="input-box" style="width: calc(100% - 130px); margin-top: 0">
-                <img loading="lazy" alt="" class="input-icon" src="@/assets/login/shield.png" />
-                <el-input v-model="form.captcha" :placeholder="$t('login.captchaPlaceholder')" style="flex: 1" />
-              </div>
-              <img loading="lazy" v-if="captchaUrl" :src="captchaUrl" alt="验证码"
-                style="width: 150px; height: 40px; cursor: pointer" @click="fetchCaptcha" />
-            </div>
-            <div style="
                 font-weight: 400;
                 font-size: 14px;
                 text-align: left;
@@ -157,7 +143,7 @@
 import Api from "@/apis/api";
 import VersionFooter from "@/components/VersionFooter.vue";
 import i18n, { changeLanguage } from "@/i18n";
-import { getUUID, goToPage, showDanger, showSuccess, sm2Encrypt, validateMobile } from "@/utils";
+import { goToPage, showDanger, showSuccess, sm2Encrypt, validateMobile } from "@/utils";
 import { mapState } from "vuex";
 import featureManager from "@/utils/featureManager";
 
@@ -222,21 +208,15 @@ export default {
       form: {
         username: "",
         password: "",
-        captcha: "",
-        captchaId: "",
         areaCode: "+86",
         mobile: "",
       },
-      captchaUuid: "",
-      captchaUrl: "",
       isMobileLogin: false,
       languageDropdownVisible: false,
     };
   },
   mounted() {
-    this.fetchCaptcha();
     this.$store.dispatch("fetchPubConfig").then(() => {
-      // 根据配置决定默认登录方式
       this.isMobileLogin = this.enableMobileRegister;
     });
   },
@@ -248,28 +228,7 @@ export default {
       }
       window.open(url, '_blank');
     },
-    fetchCaptcha() {
-      // 处理手动清空localstorage导致无法获取验证码的问题
-      const token = localStorage.getItem('token')
-      if (token) {
-        if (this.$route.path !== "/home") {
-          this.$router.push("/home");
-        }
-      } else {
-        this.captchaUuid = getUUID();
 
-        Api.user.getCaptcha(this.captchaUuid, (res) => {
-          if (res.status === 200) {
-            const blob = new Blob([res.data], { type: res.data.type });
-            this.captchaUrl = URL.createObjectURL(blob);
-          } else {
-            showDanger("验证码加载失败，点击刷新");
-          }
-        });
-      }
-    },
-
-    // 切换语言下拉菜单的可见状态变化
     handleLanguageDropdownVisibleChange(visible) {
       this.languageDropdownVisible = visible;
     },
@@ -291,8 +250,6 @@ export default {
       this.form.username = "";
       this.form.mobile = "";
       this.form.password = "";
-      this.form.captcha = "";
-      this.fetchCaptcha();
     },
 
     // 封装输入验证逻辑
@@ -317,70 +274,41 @@ export default {
 
     async login() {
       if (this.isMobileLogin) {
-        // 手机号登录验证
         if (!validateMobile(this.form.mobile, this.form.areaCode)) {
           showDanger(this.$t('login.requiredMobile'));
           return;
         }
-        // 拼接手机号作为用户名
         this.form.username = this.form.areaCode + this.form.mobile;
       } else {
-        // 用户名登录验证
         if (!this.validateInput(this.form.username, 'login.requiredUsername')) {
           return;
         }
       }
 
-      // 验证密码
       if (!this.validateInput(this.form.password, 'login.requiredPassword')) {
         return;
       }
-      // 验证验证码
-      if (!this.validateInput(this.form.captcha, 'login.requiredCaptcha')) {
-        return;
-      }
-      // 加密密码
+
       let encryptedPassword;
       try {
-        // 拼接验证码和密码
-        const captchaAndPassword = this.form.captcha + this.form.password;
-        encryptedPassword = sm2Encrypt(this.sm2PublicKey, captchaAndPassword);
+        encryptedPassword = sm2Encrypt(this.sm2PublicKey, this.form.password);
       } catch (error) {
         console.error("密码加密失败:", error);
         showDanger(this.$t('sm2.encryptionFailed'));
         return;
       }
 
-      const plainUsername = this.form.username;
-
-      this.form.captchaId = this.captchaUuid;
-
-      // 加密
-      const loginData = {
-        username: plainUsername,
-        password: encryptedPassword,
-        captchaId: this.form.captchaId
-      };
-
       Api.user.login(
-        loginData,
+        { username: this.form.username, password: encryptedPassword },
         ({ data }) => {
           showSuccess(this.$t('login.loginSuccess'));
           this.$store.commit("setToken", JSON.stringify(data.data));
           this.getUserInfo();
         },
         (err) => {
-          // 直接使用后端返回的国际化消息
-          let errorMessage = err.data.msg || "登录失败";
-
-          showDanger(errorMessage);
+          showDanger(err.data.msg || "登录失败");
         }
       );
-
-      // 重新获取验证码
-      setTimeout(() => {
-        this.fetchCaptcha();
-      }, 1000);
     },
 
     goToRegister() {
@@ -388,7 +316,7 @@ export default {
     },
     goToForgetPassword() {
       goToPage("/retrieve-password");
-    }
+    },
   },
 };
 </script>

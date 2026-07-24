@@ -91,9 +91,7 @@ public class LoginController {
     public Result<TokenDTO> login(@RequestBody LoginDTO login) {
         String password = login.getPassword();
 
-        // 使用工具类解密并验证验证码
-        String actualPassword = Sm2DecryptUtil.decryptAndValidateCaptcha(
-                password, login.getCaptchaId(), captchaService, sysParamsService);
+        String actualPassword = Sm2DecryptUtil.decryptPassword(password, sysParamsService);
 
         login.setPassword(actualPassword);
 
