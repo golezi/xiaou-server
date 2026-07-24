@@ -91,6 +91,7 @@ async def get_emotion(conn: "ConnectionHandler", text):
             emotion = EMOJI_MAP[char]
             break
     try:
+        conn.logger.bind(tag=TAG).info(f"情绪表情：{emoji} {emotion}")
         await conn.websocket.send(
             json.dumps(
                 {
@@ -102,7 +103,7 @@ async def get_emotion(conn: "ConnectionHandler", text):
             )
         )
     except Exception as e:
-        conn.logger.bind(tag=TAG).warning(f"发送情绪表情失败，错误:{e}")
+        conn.logger.bind(tag=TAG).info(f"发送情绪表情失败，错误:{e}")
     return
 
 

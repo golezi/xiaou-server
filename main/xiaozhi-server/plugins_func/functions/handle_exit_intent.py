@@ -18,7 +18,7 @@ handle_exit_intent_function_desc = {
             "properties": {
                 "say_goodbye": {
                     "type": "string",
-                    "description": "和用户友好结束对话的告别语",
+                    "description": "告别语",
                 }
             },
             "required": ["say_goodbye"],
