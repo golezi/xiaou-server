@@ -103,11 +103,11 @@ class ListenTextMessageHandler(TextMessageHandler):
                     await send_stt_message(conn, original_text)
                     await send_tts_message(conn, "stop", None)
                     conn.client_is_speaking = False
-                elif is_wakeup_words:
-                    conn.just_woken_up = True
-                    # 上报纯文字数据（复用ASR上报功能，但不提供音频数据）
-                    enqueue_asr_report(conn, "嘿，你好呀", [])
-                    await startToChat(conn, "嘿，你好呀")
+                # elif is_wakeup_words:
+                #     conn.just_woken_up = True
+                #     # 上报纯文字数据（复用ASR上报功能，但不提供音频数据）
+                #     enqueue_asr_report(conn, "嘿，你好呀", [])
+                #     await startToChat(conn, "嘿，你好呀")
                 else:
                     conn.just_woken_up = True
                     # 上报纯文字数据（复用ASR上报功能，但不提供音频数据）
