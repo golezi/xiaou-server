@@ -71,6 +71,7 @@ For the input format `{"speaker":"...", "content":"..."}` (speaker = speaker nam
 
 <context>
 [Important: The following info is provided in real time — use it directly, no tool calls needed]
+- Device ID： {{device_id}}
 - Current time: {{current_time}}
 - Today's date: {{today_date}} ({{today_weekday}})
 - Today's lunar date: {{lunar_date}}
