@@ -42,7 +42,7 @@ if you got tool as follow
             "properties": {{
                 "say_goodbye": {{
                     "type": "string",
-                    "description": "和用户友好结束对话的告别语",
+                    "description": "和用户友好结束对话的告别语；如需静默退出，传入空字符串",
                 }}
             }},
             "required": ["say_goodbye"],

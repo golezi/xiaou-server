@@ -18,7 +18,7 @@ handle_exit_intent_function_desc = {
             "properties": {
                 "say_goodbye": {
                     "type": "string",
-                    "description": "告别语",
+                    "description": "告别语；传入空字符串时直接静默退出",
                 }
             },
             "required": ["say_goodbye"],
@@ -31,7 +31,7 @@ handle_exit_intent_function_desc = {
     "handle_exit_intent", handle_exit_intent_function_desc, ToolType.SYSTEM_CTL
 )
 def handle_exit_intent(conn: "ConnectionHandler", say_goodbye: str | None = None):
-    # 处理退出意图
+    """处理退出意图；空字符串表示退出时不播放任何告别语。"""
     try:
         if say_goodbye is None:
             say_goodbye = "再见，祝您生活愉快！"
