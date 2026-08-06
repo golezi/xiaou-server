@@ -40,7 +40,8 @@ class ActionResponse:
         self.action = action  # 动作类型
         self.result = result  # 动作产生的结果
         self.response = response  # 直接回复的内容
-
+    def __str__(self):
+        return f"action = {self.action} result = {self.result} response = {self.response}"
 
 class FunctionItem:
     def __init__(self, name, description, func, type):
