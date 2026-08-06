@@ -159,7 +159,7 @@ set_device_property_function_desc = {
     "type": "function",
     "function": {
         "name": "set_device_property",
-        "description": "控制鱼缸设备属性。可控制照明、亮度、风扇、过滤、造浪、USB供电、增氧、童锁和灯光颜色。开关值必须传字符串 'true' 或 'false'。",
+        "description": "控制鱼缸设备属性。可控制照明、亮度、风扇、过滤、造浪、USB供电、增氧、童锁和灯光颜色。开关值必须传字符串 'true' 或 'false'，颜色值必须传6位十六进制字符串。",
         "parameters": {
             "type": "object",
             "properties": {
