@@ -1,3 +1,4 @@
+import hashlib
 import os
 import sys
 import copy
@@ -104,6 +105,7 @@ class ConnectionHandler:
         self.websocket: websockets.ServerConnection | None = None
         self.headers = None
         self.device_id = None
+        self.client_id = None
         self.client_ip = None
         self.prompt = None
         self.welcome_msg = None
@@ -219,7 +221,7 @@ class ConnectionHandler:
             )
 
             self.device_id = self.headers.get("device-id", None)
-
+            self.client_id = self.headers.get("client-id", None)
             # 认证通过,继续处理
             self.websocket = ws
 
