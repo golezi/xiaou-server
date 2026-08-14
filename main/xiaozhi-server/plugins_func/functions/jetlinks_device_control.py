@@ -50,13 +50,20 @@ PROPERTY_SCHEMA = {
     "light_color": {"name": "照明颜色", "type": "color_hex"},
 }
 
+CLIENT_DEVICE_DBG_MAP = {
+    "65ddcefc-6c76-4df9-a8c0-18a579596f4d": 1262173431849570632,
+    "4e028767-30f3-4ece-9e1b-672d43404243": 1262173431849570632
+}
+
 
 def get_jetlinks_device_id(client_id: str | None) -> str | None:
     """根据小智客户端 ID 查询 JetLinks device_id。
 
     TODO: 在此实现 client_id 到 JetLinks device_id 的映射。
     """
-    return os.getenv("JETLINKS_DEBUG_DEVICE_ID")
+    did = CLIENT_DEVICE_DBG_MAP.get(client_id, os.getenv("JETLINKS_DEBUG_DEVICE_ID", None))
+    logger.bind(tag=TAG).info(f"{client_id} -> {did}")
+    return did
 
 
 def _get_api_config(conn: "ConnectionHandler") -> tuple[str | None, str | None]:
