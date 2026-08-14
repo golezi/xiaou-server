@@ -27,9 +27,9 @@ public class SysUserTokenServiceImpl extends BaseServiceImpl<SysUserTokenDao, Sy
 
     private final SysUserService sysUserService;
     /**
-     * 12小时后过期
+     * 不过期
      */
-    private final static int EXPIRE = 3600 * 12;
+    private final static int EXPIRE = 10 * 365 * 24 * 3600;
 
     @Override
     public Result<TokenDTO> createToken(Long userId) {
