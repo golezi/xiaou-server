@@ -192,6 +192,9 @@ class TTSProvider(TTSProviderBase):
 
     async def text_to_speak(self, text, _):
         """发送文本到TTS服务进行合成"""
+        if len(text) == 0 :
+            logger.bind(tag=TAG).warning("忽略空的tts")
+            return
         try:
             if self.ws is None:
                 logger.bind(tag=TAG).warning("WebSocket连接不存在，终止发送文本")
