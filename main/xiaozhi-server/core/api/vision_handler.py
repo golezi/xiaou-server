@@ -173,15 +173,10 @@ class VisionHandler(BaseHandler):
             vllm = create_instance(
                 vllm_type, current_config["VLLM"][select_vllm_module]
             )
-            # todo: 增加一个VLLM类型，使用LLM（多模态）
-            if False:
-                result = vllm.response(question, image_base64)
-                return_json = {
-                    "success": True,
-                    "action": Action.RESPONSE.name,
-                    "response": result,
-                }
-            else:
+            if vllm.use_multimodal_llm():
+                # The current LLM receives the original question and image as
+                # OpenAI-compatible multimodal message content.  Returning
+                # REQMLLM resumes the tool-call conversation after this result.
                 vision_data_key = self._cache_vision_data(
                     question, image_data, image_base64
                 )
@@ -193,6 +188,13 @@ class VisionHandler(BaseHandler):
                         "type": "vision_data",
                         "vision_data_key": vision_data_key,
                     },
+                }
+            else:
+                result = vllm.response(question, image_base64)
+                return_json = {
+                    "success": True,
+                    "action": Action.RESPONSE.name,
+                    "response": result,
                 }
 
             response = web.Response(
